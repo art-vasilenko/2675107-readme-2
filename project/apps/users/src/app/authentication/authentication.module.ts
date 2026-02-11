@@ -5,8 +5,10 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { getJwtOptions } from '@project/shared/config/users';
-import { JwtAccessStrategy } from './strategies/jwt-access-strategy';
+import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
 import { NotifyModule } from '../notification/notification.module';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
   imports: [UserModule, NotifyModule,
@@ -16,6 +18,6 @@ import { NotifyModule } from '../notification/notification.module';
     })
   ],
   controllers: [AuthenticationController],
-  providers: [AuthenticationService, JwtAccessStrategy]
+  providers: [AuthenticationService, JwtAccessStrategy, LocalStrategy, JwtRefreshStrategy]
 })
 export class AuthenticationModule {}
