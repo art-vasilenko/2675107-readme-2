@@ -22,6 +22,9 @@
       "@project/shared/config/notification": [
         "libs/shared/config/notification/src/index.ts"
       ],
+      "@project/shared/config/rabbit": [
+        "libs/shared/config/rabbit/src/index.ts"
+      ],
       "@project/shared/config/users": ["libs/shared/config/users/src/index.ts"],
       "@project/shared/core": ["libs/shared/core/src/index.ts"],
       "@project/shared/core/shared-pipes": [

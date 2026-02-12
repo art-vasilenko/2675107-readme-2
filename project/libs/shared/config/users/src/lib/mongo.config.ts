@@ -23,7 +23,7 @@ async function getDbConfig(): Promise<MongoConfiguration> {
     password: process.env.MONGO_PASSWORD,
     authBase: process.env.MONGO_AUTH_BASE
   });
- await config.validate();
+  await config.validate();
 
   return config;
 };

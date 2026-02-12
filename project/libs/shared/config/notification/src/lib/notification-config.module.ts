@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-
+import { rabbitConfig } from '@project/shared/config/rabbit';
 import notifyConfig from './notification.config';
 
 const ENV_FILE_PATH = 'apps/notification/notify.env';
@@ -10,7 +10,7 @@ const ENV_FILE_PATH = 'apps/notification/notify.env';
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
-      load: [notifyConfig],
+      load: [notifyConfig, rabbitConfig],
       envFilePath: ENV_FILE_PATH
     }),
   ]

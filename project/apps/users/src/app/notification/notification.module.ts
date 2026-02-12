@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 
-import { getRabbitMQOptions } from '@project/shared/helpers';
+import { getRabbitMQOptions } from '@project/shared/config/rabbit';
 import { NotifyService } from './notification.service';
 
 @Module({
   imports: [
     RabbitMQModule.forRootAsync(
       RabbitMQModule,
-      getRabbitMQOptions('rabbit')
+      getRabbitMQOptions()
     )
   ],
   providers: [NotifyService],

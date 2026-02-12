@@ -10,9 +10,8 @@ export class PostService {
   constructor(private readonly postRepository: PostRepository) {}
 
   public async create(dto: CreatePostDto, authorId: string) {
-  return this.postRepository.createPost(dto, authorId);
-}
-
+    return this.postRepository.createPost(dto, authorId);
+  }
 
   public async findById(id: string) {
     const post = await this.postRepository.findById(id);
