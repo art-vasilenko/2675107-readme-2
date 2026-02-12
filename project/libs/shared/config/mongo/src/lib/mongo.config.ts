@@ -1,5 +1,5 @@
 import { plainToClass } from "class-transformer";
-import { MongoConfiguration } from "./mongodb/mongo.env";
+import { MongoConfiguration } from "./mongo.env";
 import { ConfigType, registerAs } from "@nestjs/config";
 
 const DEFAULT_MONGO_PORT = 27017;

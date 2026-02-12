@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EmailSubscriberModule } from './email-subscriber/email-subscriber.module';
-import { getMongooseOptions, NotifyConfigModule} from '@project/shared/config/notification'
+import {NotifyConfigModule} from '@project/shared/config/notification'
+import { getMongooseOptions } from '@project/shared/config/mongo';
 
 
 @Module({

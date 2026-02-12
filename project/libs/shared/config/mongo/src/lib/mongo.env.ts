@@ -1,6 +1,6 @@
 import { IsNumber, IsOptional, IsString, Max, Min, validateOrReject } from 'class-validator';
 
-import { EnvValidationMessage } from './mongo.messages';
+import { EnvValidationMessage } from './mongo.message';
 import { MIN_PORT, MAX_PORT, DEFAULT_MONGO_PORT } from './mongo.const';
 
 export class MongoConfiguration {

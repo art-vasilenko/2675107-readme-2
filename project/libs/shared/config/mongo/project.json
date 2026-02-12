@@ -1,0 +1,9 @@
+{
+  "name": "shared-config-mongo",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/config/mongo/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project shared-config-mongo --web",
+  "targets": {}
+}

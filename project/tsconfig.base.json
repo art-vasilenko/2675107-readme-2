@@ -19,6 +19,7 @@
       "@project/shared/config/file-vault": [
         "libs/shared/config/file-vault/src/index.ts"
       ],
+      "@project/shared/config/mongo": ["libs/shared/config/mongo/src/index.ts"],
       "@project/shared/config/notification": [
         "libs/shared/config/notification/src/index.ts"
       ],
