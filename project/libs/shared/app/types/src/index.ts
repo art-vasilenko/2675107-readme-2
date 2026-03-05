@@ -9,3 +9,5 @@ export * from './lib/like.interface';
 export * from './lib/subscriber.interface';
 export * from './lib/rabbit-routing.enum';
 export * from './lib/file.interface';
+export * from './lib/jwt-token.interface';
+export * from './lib/refresh-token-payload.interface';

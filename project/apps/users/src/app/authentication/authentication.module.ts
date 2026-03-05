@@ -9,9 +9,10 @@ import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
 import { NotifyModule } from '../notification/notification.module';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
 
 @Module({
-  imports: [UserModule, NotifyModule,
+  imports: [UserModule, NotifyModule, RefreshTokenModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: getJwtOptions,
