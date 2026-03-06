@@ -26,6 +26,7 @@
       "@project/shared/config/rabbit": [
         "libs/shared/config/rabbit/src/index.ts"
       ],
+      "@project/shared/config/redis": ["libs/shared/config/redis/src/index.ts"],
       "@project/shared/config/users": ["libs/shared/config/users/src/index.ts"],
       "@project/shared/core": ["libs/shared/core/src/index.ts"],
       "@project/shared/core/shared-pipes": [

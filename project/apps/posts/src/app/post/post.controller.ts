@@ -1,12 +1,26 @@
-import { Body, Controller, Get, Param, Post, Put, Delete, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { fillDto } from '@project/shared/helpers';
 import { PostRdo } from './rdo/post.rdo';
 import { PostQueryDto } from './dto/post-query.dto';
+import { RedisCacheInterceptor } from '../interceptors/redis-cache-interceptor';
 
 @ApiTags('posts')
+@UseInterceptors(RedisCacheInterceptor)
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
@@ -27,19 +41,23 @@ export class PostController {
 
   @Get()
   public async index(@Query() query: PostQueryDto) {
-  const result = await this.postService.findAllPublished(query);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const result = await this.postService.findAllPublished(query);
 
-  return {
-    posts: result.posts.map((p) => fillDto(PostRdo, p.toPOJO())),
-    totalPages: result.totalPages,
-    currentPage: result.currentPage,
-    totalItems: result.totalItems,
-    itemsPerPage: result.itemsPerPage,
-  };
-}
+    return {
+      posts: result.posts.map((p) => fillDto(PostRdo, p.toPOJO())),
+      totalPages: result.totalPages,
+      currentPage: result.currentPage,
+      totalItems: result.totalItems,
+      itemsPerPage: result.itemsPerPage,
+    };
+  }
 
   @Put(':id')
-  public async update(@Param('id') id: string, @Body() dto: Partial<CreatePostDto>) {
+  public async update(
+    @Param('id') id: string,
+    @Body() dto: Partial<CreatePostDto>
+  ) {
     const post = await this.postService.update(id, dto, 'user-id-1');
     return fillDto(PostRdo, post.toPOJO());
   }
