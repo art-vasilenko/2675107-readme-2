@@ -9,13 +9,8 @@ import { PostQueryDto } from './dto/post-query.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class PostRepository extends BasePrismaRepository<
-  PostEntity,
-  PostMeta
-> {
-  constructor(
-    protected readonly client: PrismaClientService
-  ) {
+export class PostRepository extends BasePrismaRepository<PostEntity, PostMeta> {
+  constructor(protected readonly client: PrismaClientService) {
     super(client, PostEntity.fromObject);
   }
 
@@ -28,10 +23,10 @@ export class PostRepository extends BasePrismaRepository<
         video: true,
         quote: true,
         link: true,
-    },
+      },
     });
 
-    if (! document) {
+    if (!document) {
       throw new NotFoundException(POST_NOT_FOUND);
     }
 
@@ -54,10 +49,10 @@ export class PostRepository extends BasePrismaRepository<
   }
 
   public async find(query: PostQueryDto): Promise<{
-    posts: PostEntity[],
-    totalItems: number
+    posts: PostEntity[];
+    totalItems: number;
   }> {
-      const {
+    const {
       page = 1,
       limit = MAX_POST_LIMIT,
       sort = 'publishedAt',
@@ -83,7 +78,7 @@ export class PostRepository extends BasePrismaRepository<
         take: limit,
         skip: (page - 1) * limit,
       }),
-      this.client.post.count({ where })
+      this.client.post.count({ where }),
     ]);
 
     const posts = documents.map((doc) =>
@@ -91,36 +86,38 @@ export class PostRepository extends BasePrismaRepository<
         ...doc,
         type: doc.type as PostType,
         status: doc.status as PostStatus,
-      }),
+      })
     );
-    return { posts, totalItems}
+    return { posts, totalItems };
   }
 
   public async deleteById(id: string): Promise<void> {
     await this.client.post.delete({
       where: {
         id,
-      }
+      },
     });
   }
 
-  public async update(id: string): Promise<PostEntity> {
+  public async update(
+    id: string,
+    data: Partial<PostEntity>
+  ): Promise<PostEntity> {
     const updatedCategory = await this.client.post.update({
       where: { id },
-      data: {
-      }
+      data,
     });
 
     return this.createEntityFromDocument({
       ...updatedCategory,
       type: updatedCategory.type as PostType,
-      status: updatedCategory.status as PostStatus
+      status: updatedCategory.status as PostStatus,
     });
   }
 
   public async createPost(
     dto: CreatePostDto,
-    authorId: string,
+    authorId: string
   ): Promise<PostEntity> {
     return this.client.$transaction(async (tx) => {
       const post = await tx.post.create({
@@ -188,29 +185,29 @@ export class PostRepository extends BasePrismaRepository<
       return this.createEntityFromDocument({
         ...post,
         type: post.type as PostType,
-        status: post.status as PostStatus
+        status: post.status as PostStatus,
       });
     });
   }
 
   public async findDrafts(authorId: string): Promise<PostEntity[]> {
-  const documents = await this.client.post.findMany({
-    where: {
-      status: PostStatus.DRAFT,
-      authorId,
-    },
-    orderBy: {
-      createdAt: Prisma.SortOrder.desc,
-    },
-    take: MAX_POST_LIMIT,
-  });
+    const documents = await this.client.post.findMany({
+      where: {
+        status: PostStatus.DRAFT,
+        authorId,
+      },
+      orderBy: {
+        createdAt: Prisma.SortOrder.desc,
+      },
+      take: MAX_POST_LIMIT,
+    });
 
-  return documents.map((doc) =>
-    this.createEntityFromDocument({
-      ...doc,
-      type: doc.type as PostType,
-      status: doc.status as PostStatus,
-    }),
-  );
-}
+    return documents.map((doc) =>
+      this.createEntityFromDocument({
+        ...doc,
+        type: doc.type as PostType,
+        status: doc.status as PostStatus,
+      })
+    );
+  }
 }

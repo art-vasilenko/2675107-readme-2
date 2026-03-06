@@ -1,16 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostEntity } from './post.entity';
-import { CANNOT_DELETE_POST, CANNOT_EDIT_POST, MAX_POST_LIMIT, POST_NOT_FOUND } from './post.constant';
+import {
+  CANNOT_DELETE_POST,
+  CANNOT_EDIT_POST,
+  MAX_POST_LIMIT,
+  POST_NOT_FOUND,
+} from './post.constant';
 import { PostQueryDto } from './dto/post-query.dto';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postRepository: PostRepository) {}
+  constructor(
+    private readonly postRepository: PostRepository,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {}
 
   public async create(dto: CreatePostDto, authorId: string) {
-    return this.postRepository.createPost(dto, authorId);
+    const res = await this.postRepository.createPost(dto, authorId);
+    await this.invalidatePostCaches();
+    return res;
   }
 
   public async findById(id: string) {
@@ -20,15 +32,18 @@ export class PostService {
   }
 
   public async findAllPublished(query: PostQueryDto) {
-    const { page = 1, limit = MAX_POST_LIMIT } = query
+    const { page = 1, limit = MAX_POST_LIMIT } = query;
 
     const { posts, totalItems } = await this.postRepository.find(query);
 
     const totalPages = Math.ceil(totalItems / limit);
 
     return {
-      posts, totalPages, currentPage: page,
-      totalItems, itemsPerPage: limit
+      posts,
+      totalPages,
+      currentPage: page,
+      totalItems,
+      itemsPerPage: limit,
     };
   }
 
@@ -39,11 +54,14 @@ export class PostService {
     }
     const updateData = {
       ...dto,
-      publishedAt: new Date()
-    }
+      publishedAt: new Date(),
+    };
 
     post.populate(updateData);
-    return this.postRepository.update(id);
+    const res = await this.postRepository.update(id, updateData);
+
+    await this.invalidatePostCaches(id);
+    return res;
   }
 
   public async delete(id: string, userId: string) {
@@ -53,6 +71,7 @@ export class PostService {
     }
 
     await this.postRepository.deleteById(id);
+    await this.invalidatePostCaches(id);
   }
 
   public async repost(postId: string, userId: string) {
@@ -70,10 +89,27 @@ export class PostService {
   }
 
   public async findByAuthor(authorId: string) {
-    return this.postRepository.find({ authorId: authorId});
+    return this.postRepository.find({ authorId: authorId });
   }
 
   public async findDrafts(userId: string) {
     return this.postRepository.findDrafts(userId);
+  }
+
+  private async invalidatePostCaches(postId?: string) {
+    const store = this.cacheManager.stores?.[0];
+
+    if (store?.iterator) {
+      for await (const [key] of store.iterator({})) {
+        console.log([key]);
+        if (key.startsWith('posts:list')) {
+          await this.cacheManager.del(key);
+        }
+      }
+    }
+
+    if (postId) {
+      await this.cacheManager.del(`post:detail:${postId}`);
+    }
   }
 }

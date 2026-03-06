@@ -21,7 +21,9 @@ import Keyv from 'keyv';
 
         const keyv = new Keyv({
           store: new KeyvRedis(uri),
-          ttl: 60000,
+          namespace: 'posts',
+          useKeyPrefix: false,
+          ttl: 120000,
         });
 
         return {
